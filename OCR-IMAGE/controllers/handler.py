@@ -8,7 +8,8 @@ from services.switching import imgSwitching
 import re
 from traceback import format_exc
 
-async def ocr_image(req, cp_pool):
+# async def ocr_image(req, cp_pool):
+async def ocr_image(req):
     timestamp = datetime.now()
     loggerTime = timestamp.strftime("%y%m%d%H%M%S%f")
     useType = param_ocr_type
@@ -164,93 +165,93 @@ async def ocr_image(req, cp_pool):
         )
     )
 
-    #Insert to Database : Oracle
-    try :
-        idNo = ocr["nik"]
-        nama = ocr["nama"]
-        b_place = ocr["tempat_lahir"]
-        bdate = ocr["tanggal_lahir"]
-        if is_valid_date(bdate, "%Y-%m-%d %H:%M:%S"):
-            dob = datetime.strptime(bdate, "%Y-%m-%d %H:%M:%S")
-        elif is_valid_date(bdate, "%Y-%m-%d"):
-            dob = datetime.strptime(bdate, "%Y-%m-%d")
-        else:
-            dob = ""
-        btype = ocr["golongan_darah"]
-        if (btype == "AB") or (btype == "A") or (btype == "B") or (btype == "O"):
-            gol_darah = btype
-        else: 
-            gol_darah = "BLANK"
-        prof = ocr["provinsi"]
-        kota = ocr["kota_kabupaten"]
-        kecamatan = ocr["kecamatan"]
-        desa = ocr["kelurahan_atau_desa"]
-        if ocr["rtrw"] != "":
-            temp_rtrw = ocr["rtrw"].split("/") 
-            rt = temp_rtrw[0]
-            rw = temp_rtrw[1]
-        else:
-            rt = ""
-            rw = ""
-        alamat = ocr["alamat"]
-        jenis_kelamin = ocr["jenis_kelamin"]
-        agama = ocr["agama"]
-        status = ocr["status_perkawinan"]
-        pekerjaan = ocr["pekerjaan"]
-        identity_county = ocr["kewarganegaraan"]
-        berlaku = ocr["tanggal_terbit"]
+    # #Insert to Database : Oracle
+    # try :
+    #     idNo = ocr["nik"]
+    #     nama = ocr["nama"]
+    #     b_place = ocr["tempat_lahir"]
+    #     bdate = ocr["tanggal_lahir"]
+    #     if is_valid_date(bdate, "%Y-%m-%d %H:%M:%S"):
+    #         dob = datetime.strptime(bdate, "%Y-%m-%d %H:%M:%S")
+    #     elif is_valid_date(bdate, "%Y-%m-%d"):
+    #         dob = datetime.strptime(bdate, "%Y-%m-%d")
+    #     else:
+    #         dob = ""
+    #     btype = ocr["golongan_darah"]
+    #     if (btype == "AB") or (btype == "A") or (btype == "B") or (btype == "O"):
+    #         gol_darah = btype
+    #     else: 
+    #         gol_darah = "BLANK"
+    #     prof = ocr["provinsi"]
+    #     kota = ocr["kota_kabupaten"]
+    #     kecamatan = ocr["kecamatan"]
+    #     desa = ocr["kelurahan_atau_desa"]
+    #     if ocr["rtrw"] != "":
+    #         temp_rtrw = ocr["rtrw"].split("/") 
+    #         rt = temp_rtrw[0]
+    #         rw = temp_rtrw[1]
+    #     else:
+    #         rt = ""
+    #         rw = ""
+    #     alamat = ocr["alamat"]
+    #     jenis_kelamin = ocr["jenis_kelamin"]
+    #     agama = ocr["agama"]
+    #     status = ocr["status_perkawinan"]
+    #     pekerjaan = ocr["pekerjaan"]
+    #     identity_county = ocr["kewarganegaraan"]
+    #     berlaku = ocr["tanggal_terbit"]
         
-        rawReq = {
-            "akun": akun,
-            "idRefferal": idRefferal,
+    #     rawReq = {
+    #         "akun": akun,
+    #         "idRefferal": idRefferal,
     
-            "bizId": bizId,
-            "image" : "Base64 Image"
-        }
-        rawRes = result
+    #         "bizId": bizId,
+    #         "image" : "Base64 Image"
+    #     }
+    #     rawRes = result
 
-        insertDb(
-            akun,
-            idRefferal,
-            useType,
-            bizId,
-            errorCode,
-            status,
-            errorDescString.upper(),
-            idNo,
-            nama,
-            b_place,
-            dob,
-            gol_darah,
-            prof,
-            kota,
-            kecamatan,
-            desa,
-            rt,
-            rw,
-            alamat,
-            jenis_kelamin,
-            agama,
-            status,
-            pekerjaan,
-            identity_county,
-            berlaku,
-            str(rawReq),
-            str(rawRes),
-            param_service_name,
-            cp_pool
-        )
-        logger.info("{0} - {1} - Insert database success".format(loggerTime, idRefferal))
-    except KeyError as e:
-        logger.error(f"{loggerTime} - {idRefferal} - An error has occured when verifying data from OCR {useType}. ")
-        logger.error(f"Syserr:{e}")
-        logger.error(f"Traceback::{format_exc()}")
-        errorCode = param_error["general_exception"][0]
-        errorDescString = f"(MICROSERVICE) Timeout or Please Check OCR {useType}"
-    except DatabaseException as e:
-        logger.error("{0} - {1} - Failed to insert session. Database problem.".format(loggerTime, idRefferal))
-        logger.error(f"Exception Type: {type(e).__name__} - Syserr: {e}")
-        logger.error(f"Traceback::{format_exc()}")
+    #     insertDb(
+    #         akun,
+    #         idRefferal,
+    #         useType,
+    #         bizId,
+    #         errorCode,
+    #         status,
+    #         errorDescString.upper(),
+    #         idNo,
+    #         nama,
+    #         b_place,
+    #         dob,
+    #         gol_darah,
+    #         prof,
+    #         kota,
+    #         kecamatan,
+    #         desa,
+    #         rt,
+    #         rw,
+    #         alamat,
+    #         jenis_kelamin,
+    #         agama,
+    #         status,
+    #         pekerjaan,
+    #         identity_county,
+    #         berlaku,
+    #         str(rawReq),
+    #         str(rawRes),
+    #         param_service_name,
+    #         cp_pool
+    #     )
+    #     logger.info("{0} - {1} - Insert database success".format(loggerTime, idRefferal))
+    # except KeyError as e:
+    #     logger.error(f"{loggerTime} - {idRefferal} - An error has occured when verifying data from OCR {useType}. ")
+    #     logger.error(f"Syserr:{e}")
+    #     logger.error(f"Traceback::{format_exc()}")
+    #     errorCode = param_error["general_exception"][0]
+    #     errorDescString = f"(MICROSERVICE) Timeout or Please Check OCR {useType}"
+    # except DatabaseException as e:
+    #     logger.error("{0} - {1} - Failed to insert session. Database problem.".format(loggerTime, idRefferal))
+    #     logger.error(f"Exception Type: {type(e).__name__} - Syserr: {e}")
+    #     logger.error(f"Traceback::{format_exc()}")
 
     endDate = datetime.now()
     timeDelta = endDate - timestamp
