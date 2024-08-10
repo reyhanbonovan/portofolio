@@ -18,6 +18,7 @@ public class ErrorRepository {
     public ErrorRepository() {
         paramError = new HashMap<>();
         paramError.put("code_exist", new ErrorDetail("01", "KODE BARANG SUDAH ADA, GAGAL INPUT KE DATABASE"));
+        paramError.put("item_nfound", new ErrorDetail("02", "BARANG TIDAK DITEMUKAN"));
         paramError.put("general_exception", new ErrorDetail("99", "GENERAL EXCEPTION, INTERNAL SERVER ERROR"));
     }
 

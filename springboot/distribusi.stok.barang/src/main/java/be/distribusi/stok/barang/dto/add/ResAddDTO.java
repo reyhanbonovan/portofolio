@@ -1,20 +1,19 @@
-package be.distribusi.stok.barang.dto.insert;
+package be.distribusi.stok.barang.dto.add;
 
+import be.distribusi.stok.barang.dto.insert.ResInsertDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResInsertDTO {
-
+public class ResAddDTO {
     @JsonProperty("data")
-    private insertDataDTO data;
+    private ResInsertDTO.insertDataDTO data;
 
     @JsonProperty("status_code")
     private String statusCode;
@@ -29,7 +28,7 @@ public class ResInsertDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class insertDataDTO{
+    public static class insertDataDTO {
         @JsonProperty("logger_id")
         private String loggerId;
 
@@ -54,6 +53,4 @@ public class ResInsertDTO {
         @JsonProperty("stok_keluar")
         private String stokKeluar;
     }
-
-
 }

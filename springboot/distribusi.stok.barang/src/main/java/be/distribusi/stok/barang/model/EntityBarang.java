@@ -28,19 +28,19 @@ public class EntityBarang {
     private String namaBarang;
 
     @Column(name = "harga_beli")
-    private int hargaBeli;
+    private Integer hargaBeli;
 
     @Column(name = "harga_jual")
-    private int hargaJual;
+    private Integer hargaJual;
 
-    @Column(name = "stok_awal")
-    private int stokAwal;
+    @Column(name = "sisa_stok")
+    private Integer sisaStok;
 
     @Column(name = "stok_masuk")
-    private int stokMasuk;
+    private Integer stokMasuk;
 
     @Column(name = "stok_keluar")
-    private int stokKeluar;
+    private Integer stokKeluar;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt;
