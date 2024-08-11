@@ -1,20 +1,20 @@
-package be.distribusi.stok.barang.dto.insert;
+package be.distribusi.stok.barang.dto.order;
 
+import be.distribusi.stok.barang.dto.insert.ResInsertDTO;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class ResInsertDTO {
+public class ResOrderDTO {
 
     @JsonProperty("data")
-    private insertDataDTO data;
+    private orderDataDTO data;
 
     @JsonProperty("status_code")
     private String statusCode;
@@ -29,7 +29,7 @@ public class ResInsertDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class insertDataDTO{
+    public static class orderDataDTO{
         @JsonProperty("logger_id")
         private String loggerId;
 
@@ -39,23 +39,13 @@ public class ResInsertDTO {
         @JsonProperty("nama_barang")
         private String namaBarang;
 
-        @JsonProperty("harga_beli")
-        private String hargaBeli;
-
         @JsonProperty("harga_jual")
         private String hargaJual;
 
-        @JsonProperty("sisa_stok")
-        private String sisaStok;
+        @JsonProperty("total_pesanan")
+        private String totalPesanan;
 
-        @JsonProperty("stok_masuk")
-        private String stokMasuk;
-
-        @JsonProperty("stok_keluar")
-        private String stokKeluar;
-
-
+        @JsonProperty("total_harga")
+        private String totalHarga;
     }
-
-
 }

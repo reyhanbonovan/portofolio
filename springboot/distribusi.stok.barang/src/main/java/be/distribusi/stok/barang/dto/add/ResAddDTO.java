@@ -13,7 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ResAddDTO {
     @JsonProperty("data")
-    private ResInsertDTO.insertDataDTO data;
+    private addDataDTO data;
 
     @JsonProperty("status_code")
     private String statusCode;
@@ -28,7 +28,7 @@ public class ResAddDTO {
     @Setter
     @AllArgsConstructor
     @NoArgsConstructor
-    public static class insertDataDTO {
+    public static class addDataDTO {
         @JsonProperty("logger_id")
         private String loggerId;
 

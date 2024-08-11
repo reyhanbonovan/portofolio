@@ -2,15 +2,13 @@ package be.distribusi.stok.barang.controller;
 
 import be.distribusi.stok.barang.dto.add.ReqAddDTO;
 import be.distribusi.stok.barang.dto.insert.ReqInsertDTO;
+import be.distribusi.stok.barang.dto.order.ReqOrderDTO;
 import be.distribusi.stok.barang.service.DistribusiBarangService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 
 @RestController
@@ -27,7 +25,12 @@ public class DistribusiStokBarang {
     }
 
     @PostMapping("/addStokBarang")
-    public  ResponseEntity<?> tambahBarangController(@RequestBody @Valid ReqAddDTO requestBody){
+    public  ResponseEntity<?> addBarangController(@RequestBody @Valid ReqAddDTO requestBody){
         return distribusiBarangService.addBarangService(requestBody);
+    }
+
+    @PostMapping("/orderBarang")
+    public  ResponseEntity<?> orderBarangController(@RequestBody @Valid ReqOrderDTO requestBody){
+        return distribusiBarangService.orderBarangService(requestBody);
     }
 }

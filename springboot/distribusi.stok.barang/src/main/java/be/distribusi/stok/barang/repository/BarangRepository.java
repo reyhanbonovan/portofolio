@@ -31,4 +31,10 @@ public interface BarangRepository extends JpaRepository<EntityBarang, Integer> {
     @Transactional
     @Query(value = "UPDATE stok_barang SET sisa_stok = :sisaStok, stok_masuk = :stokMasuk, modified_at = CURRENT_TIMESTAMP WHERE kode_barang = :kodeBarang AND nama_barang = :namaBarang", nativeQuery = true)
     void  updateAddBarang(@Param("sisaStok") int sisaStok, @Param("stokMasuk") int stokMasuk, @Param("kodeBarang") String kodeBarang, @Param("namaBarang") String namaBarang);
+
+    //Update Order Barang
+    @Modifying
+    @Transactional
+    @Query(value = "UPDATE stok_barang SET sisa_stok = :sisaStok, stok_keluar = :stokKeluar, modified_at = CURRENT_TIMESTAMP WHERE kode_barang = :kodeBarang AND nama_barang = :namaBarang", nativeQuery = true)
+    void  updateOrderBarang(@Param("sisaStok") int sisaStok, @Param("stokKeluar") int stokMasuk, @Param("kodeBarang") String kodeBarang, @Param("namaBarang") String namaBarang);
 }

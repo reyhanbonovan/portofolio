@@ -1,9 +1,12 @@
 package be.distribusi.stok.barang.service;
 
 import be.distribusi.stok.barang.dto.add.ReqAddDTO;
+import be.distribusi.stok.barang.dto.add.ResAddDTO;
 import be.distribusi.stok.barang.dto.insert.ReqInsertDTO;
-import be.distribusi.stok.barang.dto.insert.ResErrorDTO;
 import be.distribusi.stok.barang.dto.insert.ResInsertDTO;
+import be.distribusi.stok.barang.dto.insert.ResErrorDTO;
+import be.distribusi.stok.barang.dto.order.ReqOrderDTO;
+import be.distribusi.stok.barang.dto.order.ResOrderDTO;
 import be.distribusi.stok.barang.exception.AppException;
 import be.distribusi.stok.barang.model.EntityBarang;
 import be.distribusi.stok.barang.repository.BarangRepository; // Import repository
@@ -33,8 +36,7 @@ public class DistribusiBarangService {
         LocalDateTime now = LocalDateTime.now();
         // Format LocalDateTime menjadi String
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDateTime = now.format(formatter);
-        String loggerId = formattedDateTime;
+        String loggerId = now.format(formatter);
 
         try {
             String kodeBarang = requestBody.getKodeBarang();
@@ -52,19 +54,19 @@ public class DistribusiBarangService {
                 barangRepository.insertStokBarang(kodeBarang, namaBarang, hargaBeli, hargaJual, sisaStok, stokMasuk);
 
                 // Mapping request ke responseDTO
-                ResInsertDTO.insertDataDTO dataDTO = new ResInsertDTO.insertDataDTO();
+                ResInsertDTO.insertDataDTO insertDataDTO = new ResInsertDTO.insertDataDTO();
                 // Set data ke responseDTO
-                dataDTO.setLoggerId(loggerId);
-                dataDTO.setKodeBarang(kodeBarang);
-                dataDTO.setNamaBarang(namaBarang);
-                dataDTO.setHargaBeli(String.valueOf(hargaBeli));
-                dataDTO.setHargaJual(String.valueOf(hargaJual));
-                dataDTO.setSisaStok(String.valueOf(sisaStok));
-                dataDTO.setStokMasuk(String.valueOf(stokMasuk));
-                dataDTO.setStokKeluar(String.valueOf(stokKeluar));
+                insertDataDTO.setLoggerId(loggerId);
+                insertDataDTO.setKodeBarang(kodeBarang);
+                insertDataDTO.setNamaBarang(namaBarang);
+                insertDataDTO.setHargaBeli(String.valueOf(hargaBeli));
+                insertDataDTO.setHargaJual(String.valueOf(hargaJual));
+                insertDataDTO.setSisaStok(String.valueOf(sisaStok));
+                insertDataDTO.setStokMasuk(String.valueOf(stokMasuk));
+                insertDataDTO.setStokKeluar(String.valueOf(stokKeluar));
 
                 ResInsertDTO responseDTO = new ResInsertDTO();
-                responseDTO.setData(dataDTO);
+                responseDTO.setData(insertDataDTO);
                 responseDTO.setStatusCode("200");
                 responseDTO.setStatusMsg("SUCCESS");
                 responseDTO.setErrorMessage("");
@@ -102,14 +104,14 @@ public class DistribusiBarangService {
             log.info("{} - End-to-End processing complete.", loggerId);
         }
     }
+
     // Add Barang Service
     public ResponseEntity<?> addBarangService(@Valid ReqAddDTO requestBody){
         // Buat objek LocalDateTime
         LocalDateTime now = LocalDateTime.now();
         // Format LocalDateTime menjadi String
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        String formattedDateTime = now.format(formatter);
-        String loggerId = formattedDateTime;
+        String loggerId = now.format(formatter);
         try {
             String kodeBarang = requestBody.getKodeBarang();
             String namaBarang = requestBody.getNamaBarang();
@@ -130,19 +132,89 @@ public class DistribusiBarangService {
             barangRepository.updateAddBarang(sisaStok, stokMasuk, kodeBarang, namaBarang);
 
             // Mapping request ke responseDTO
-            ResInsertDTO.insertDataDTO dataDTO = new ResInsertDTO.insertDataDTO();
+            ResAddDTO.addDataDTO addDataDTO = new ResAddDTO.addDataDTO();
             // Set data ke responseDTO
-            dataDTO.setLoggerId(loggerId);
-            dataDTO.setKodeBarang(kodeBarang);
-            dataDTO.setNamaBarang(namaBarang);
-            dataDTO.setHargaBeli(String.valueOf(barang.getHargaBeli()));
-            dataDTO.setHargaJual(String.valueOf(barang.getHargaJual()));
-            dataDTO.setSisaStok(String.valueOf(sisaStok));
-            dataDTO.setStokMasuk(String.valueOf(stokMasuk));
-            dataDTO.setStokKeluar(String.valueOf(barang.getStokKeluar()));
+            addDataDTO.setLoggerId(loggerId);
+            addDataDTO.setKodeBarang(kodeBarang);
+            addDataDTO.setNamaBarang(namaBarang);
+            addDataDTO.setHargaBeli(String.valueOf(barang.getHargaBeli()));
+            addDataDTO.setHargaJual(String.valueOf(barang.getHargaJual()));
+            addDataDTO.setSisaStok(String.valueOf(sisaStok));
+            addDataDTO.setStokMasuk(String.valueOf(stokMasuk));
+            addDataDTO.setStokKeluar(String.valueOf(barang.getStokKeluar()));
 
-            ResInsertDTO responseDTO = new ResInsertDTO();
-            responseDTO.setData(dataDTO);
+            ResAddDTO responseDTO = new ResAddDTO();
+            responseDTO.setData(addDataDTO);
+            responseDTO.setStatusCode("200");
+            responseDTO.setStatusMsg("SUCCESS");
+            responseDTO.setErrorMessage("");
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } catch (AppException e) {
+            log.error("{} - AppException occurred: {} - {}", loggerId, e.getStatusCode(), e.getErrorMessage());
+            ResErrorDTO responseErrorDTO = new ResErrorDTO();
+            responseErrorDTO.setLoggerId(loggerId);
+            responseErrorDTO.setStatusMsg("FAILED");
+            responseErrorDTO.setStatusCode(e.getStatusCode());
+            responseErrorDTO.setErrorMessage(e.getErrorMessage());
+            // Return error response
+            return ResponseEntity.status(e.getHttpStatus()).body(responseErrorDTO);
+        } catch (Exception e) {
+            log.error("{} - An unexpected error occurred. {}", loggerId, e.getMessage());
+            // Set data ke responseErrorDTO
+            ResErrorDTO responseErrorDTO = new ResErrorDTO();
+            responseErrorDTO.setLoggerId(loggerId);
+            responseErrorDTO.setStatusMsg("FAILED");
+            responseErrorDTO.setStatusCode(errorConfig.getErrorCode("general_exception"));
+            responseErrorDTO.setErrorMessage(errorConfig.getErrorMessage("general_exception"));
+            // Return error response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseErrorDTO);
+        } finally {
+            // Logging final process
+            log.info("{} - End-to-End processing complete.", loggerId);
+        }
+    }
+
+    public ResponseEntity<?> orderBarangService(@Valid ReqOrderDTO requestBody) {
+        // Buat objek LocalDateTime
+        LocalDateTime now = LocalDateTime.now();
+        // Format LocalDateTime menjadi String
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String loggerId = now.format(formatter);
+        try {
+            String kodeBarang = requestBody.getKodeBarang();
+            String namaBarang = requestBody.getNamaBarang();
+            Integer banyakPesanan = Integer.parseInt(requestBody.getBanyakPesanan());
+            //Get data Barang
+            List<EntityBarang> barangList = barangRepository.findBarangbyCodeName(kodeBarang, namaBarang);
+            //Cek Barang is Exist
+            if (barangList.isEmpty()){
+                log.error("{} - Barang tidak ditemukan", loggerId);
+                String statusCode = errorConfig.getErrorCode("item_nfound");
+                String errorMessage = errorConfig.getErrorMessage("item_nfound");
+                throw new AppException(statusCode, errorMessage, HttpStatus.NOT_FOUND);
+            }
+            EntityBarang barang = barangList.get(0);
+            //Update srok Keluar dan sisa stok
+            Integer stokKeluarTemp = (barang.getStokKeluar() == null || barang.getStokKeluar().equals("")) ? 0 : barang.getStokKeluar();
+            int sisaStok = (barang.getSisaStok() - banyakPesanan);
+            int stokKeluar = stokKeluarTemp + banyakPesanan;
+            barangRepository.updateOrderBarang(sisaStok, stokKeluar, kodeBarang, namaBarang);
+            // Hitung Harga Pesanan
+            Integer totalHarga = (banyakPesanan * barang.getHargaJual());
+
+            // Mapping request ke responseDTO
+            ResOrderDTO.orderDataDTO orderDataDTO = new ResOrderDTO.orderDataDTO();
+            // Set data ke responseDTO
+            orderDataDTO.setLoggerId(loggerId);
+            orderDataDTO.setKodeBarang(kodeBarang);
+            orderDataDTO.setNamaBarang(namaBarang);
+            orderDataDTO.setHargaJual(String.valueOf(barang.getHargaJual()));
+            orderDataDTO.setTotalPesanan(String.valueOf(banyakPesanan));
+            orderDataDTO.setTotalHarga(String.valueOf(totalHarga));
+
+            ResOrderDTO responseDTO = new ResOrderDTO();
+            responseDTO.setData(orderDataDTO);
             responseDTO.setStatusCode("200");
             responseDTO.setStatusMsg("SUCCESS");
             responseDTO.setErrorMessage("");
