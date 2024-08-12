@@ -2,11 +2,15 @@ package be.distribusi.stok.barang.service;
 
 import be.distribusi.stok.barang.dto.add.ReqAddDTO;
 import be.distribusi.stok.barang.dto.add.ResAddDTO;
+import be.distribusi.stok.barang.dto.delete.ReqDeleteDTO;
+import be.distribusi.stok.barang.dto.delete.ResDeleteDTO;
 import be.distribusi.stok.barang.dto.insert.ReqInsertDTO;
 import be.distribusi.stok.barang.dto.insert.ResInsertDTO;
 import be.distribusi.stok.barang.dto.insert.ResErrorDTO;
 import be.distribusi.stok.barang.dto.order.ReqOrderDTO;
 import be.distribusi.stok.barang.dto.order.ResOrderDTO;
+import be.distribusi.stok.barang.dto.select.ReqSelectDTO;
+import be.distribusi.stok.barang.dto.select.ResSelectDTO;
 import be.distribusi.stok.barang.exception.AppException;
 import be.distribusi.stok.barang.model.EntityBarang;
 import be.distribusi.stok.barang.repository.BarangRepository; // Import repository
@@ -39,8 +43,8 @@ public class DistribusiBarangService {
         String loggerId = now.format(formatter);
 
         try {
-            String kodeBarang = requestBody.getKodeBarang();
-            String namaBarang = requestBody.getNamaBarang();
+            String kodeBarang = requestBody.getKodeBarang().toUpperCase();
+            String namaBarang = requestBody.getNamaBarang().toUpperCase();
             Integer hargaBeli = Integer.parseInt(requestBody.getHargaBeli());
             Integer hargaJual = Integer.parseInt(requestBody.getHargaJual());
             Integer stokMasuk = Integer.parseInt(requestBody.getStokMasuk());
@@ -113,8 +117,8 @@ public class DistribusiBarangService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String loggerId = now.format(formatter);
         try {
-            String kodeBarang = requestBody.getKodeBarang();
-            String namaBarang = requestBody.getNamaBarang();
+            String kodeBarang = requestBody.getKodeBarang().toUpperCase();
+            String namaBarang = requestBody.getNamaBarang().toUpperCase();
             Integer stokMasuk = Integer.parseInt(requestBody.getStokMasuk());
             //Get data Barang
             List<EntityBarang> barangList = barangRepository.findBarangbyCodeName(kodeBarang, namaBarang);
@@ -175,6 +179,7 @@ public class DistribusiBarangService {
         }
     }
 
+    //Order Barang Service
     public ResponseEntity<?> orderBarangService(@Valid ReqOrderDTO requestBody) {
         // Buat objek LocalDateTime
         LocalDateTime now = LocalDateTime.now();
@@ -182,8 +187,8 @@ public class DistribusiBarangService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         String loggerId = now.format(formatter);
         try {
-            String kodeBarang = requestBody.getKodeBarang();
-            String namaBarang = requestBody.getNamaBarang();
+            String kodeBarang = requestBody.getKodeBarang().toUpperCase();
+            String namaBarang = requestBody.getNamaBarang().toUpperCase();
             Integer banyakPesanan = Integer.parseInt(requestBody.getBanyakPesanan());
             //Get data Barang
             List<EntityBarang> barangList = barangRepository.findBarangbyCodeName(kodeBarang, namaBarang);
@@ -219,6 +224,129 @@ public class DistribusiBarangService {
             responseDTO.setStatusMsg("SUCCESS");
             responseDTO.setErrorMessage("");
 
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } catch (AppException e) {
+            log.error("{} - AppException occurred: {} - {}", loggerId, e.getStatusCode(), e.getErrorMessage());
+            ResErrorDTO responseErrorDTO = new ResErrorDTO();
+            responseErrorDTO.setLoggerId(loggerId);
+            responseErrorDTO.setStatusMsg("FAILED");
+            responseErrorDTO.setStatusCode(e.getStatusCode());
+            responseErrorDTO.setErrorMessage(e.getErrorMessage());
+            // Return error response
+            return ResponseEntity.status(e.getHttpStatus()).body(responseErrorDTO);
+        } catch (Exception e) {
+            log.error("{} - An unexpected error occurred. {}", loggerId, e.getMessage());
+            // Set data ke responseErrorDTO
+            ResErrorDTO responseErrorDTO = new ResErrorDTO();
+            responseErrorDTO.setLoggerId(loggerId);
+            responseErrorDTO.setStatusMsg("FAILED");
+            responseErrorDTO.setStatusCode(errorConfig.getErrorCode("general_exception"));
+            responseErrorDTO.setErrorMessage(errorConfig.getErrorMessage("general_exception"));
+            // Return error response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseErrorDTO);
+        } finally {
+            // Logging final process
+            log.info("{} - End-to-End processing complete.", loggerId);
+        }
+    }
+
+    //Delete Barang Service
+    public ResponseEntity<?> deleteBarangService(@Valid ReqDeleteDTO requestBody) {
+        // Buat objek LocalDateTime
+        LocalDateTime now = LocalDateTime.now();
+        // Format LocalDateTime menjadi String
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String loggerId = now.format(formatter);
+        try{
+            String kodeBarang = requestBody.getKodeBarang().toUpperCase();
+            String namaBarang = requestBody.getNamaBarang().toUpperCase();
+
+            List<EntityBarang> barangList = barangRepository.findBarangbyCodeName(kodeBarang, namaBarang);
+            //Cek Barang is Exist
+            if (barangList.isEmpty()){
+                log.error("{} - Barang tidak ditemukan", loggerId);
+                String statusCode = errorConfig.getErrorCode("item_nfound");
+                String errorMessage = errorConfig.getErrorMessage("item_nfound");
+                throw new AppException(statusCode, errorMessage, HttpStatus.NOT_FOUND);
+            }
+            barangRepository.deleteBarangByCodeName(kodeBarang, namaBarang);
+
+            // Mapping request ke responseDTO
+            ResDeleteDTO.deleteDataDTO deleteDataDTO = new ResDeleteDTO.deleteDataDTO();
+            // Set data ke responseDTO
+            deleteDataDTO.setLoggerId(loggerId);
+            deleteDataDTO.setStatusData(String.format("Data dengan kode_barang = %s, nama_barang = %s berhasil dihapus", kodeBarang, namaBarang));
+
+            ResDeleteDTO responseDTO = new ResDeleteDTO();
+            responseDTO.setData(deleteDataDTO);
+            responseDTO.setStatusCode("200");
+            responseDTO.setStatusMsg("SUCCESS");
+            responseDTO.setErrorMessage("");
+
+            return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
+        } catch (AppException e) {
+            log.error("{} - AppException occurred: {} - {}", loggerId, e.getStatusCode(), e.getErrorMessage());
+            ResErrorDTO responseErrorDTO = new ResErrorDTO();
+            responseErrorDTO.setLoggerId(loggerId);
+            responseErrorDTO.setStatusMsg("FAILED");
+            responseErrorDTO.setStatusCode(e.getStatusCode());
+            responseErrorDTO.setErrorMessage(e.getErrorMessage());
+            // Return error response
+            return ResponseEntity.status(e.getHttpStatus()).body(responseErrorDTO);
+        } catch (Exception e) {
+            log.error("{} - An unexpected error occurred. {}", loggerId, e.getMessage());
+            // Set data ke responseErrorDTO
+            ResErrorDTO responseErrorDTO = new ResErrorDTO();
+            responseErrorDTO.setLoggerId(loggerId);
+            responseErrorDTO.setStatusMsg("FAILED");
+            responseErrorDTO.setStatusCode(errorConfig.getErrorCode("general_exception"));
+            responseErrorDTO.setErrorMessage(errorConfig.getErrorMessage("general_exception"));
+            // Return error response
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(responseErrorDTO);
+        } finally {
+            // Logging final process
+            log.info("{} - End-to-End processing complete.", loggerId);
+        }
+    }
+
+    //Tampilkan Barang Service
+    public ResponseEntity<?> selectBarangService(@Valid ReqSelectDTO requestBody) {
+        // Buat objek LocalDateTime
+        LocalDateTime now = LocalDateTime.now();
+        // Format LocalDateTime menjadi String
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String loggerId = now.format(formatter);
+        try {
+            String kodeBarang = requestBody.getKodeBarang().toUpperCase();
+            String namaBarang = requestBody.getNamaBarang().toUpperCase();
+
+            List<EntityBarang> barangList = barangRepository.findBarangbyCodeName(kodeBarang, namaBarang);
+            //Cek Barang is Exist
+            if (barangList.isEmpty()){
+                log.error("{} - Barang tidak ditemukan", loggerId);
+                String statusCode = errorConfig.getErrorCode("item_nfound");
+                String errorMessage = errorConfig.getErrorMessage("item_nfound");
+                throw new AppException(statusCode, errorMessage, HttpStatus.NOT_FOUND);
+            }
+            EntityBarang barang = barangList.get(0);
+
+            ResSelectDTO.selectDataDTO selectDataDTO = new ResSelectDTO.selectDataDTO();
+            selectDataDTO.setLoggerId(loggerId);
+            selectDataDTO.setKodeBarang(barang.getKodeBarang());
+            selectDataDTO.setNamaBarang(barang.getNamaBarang());
+            selectDataDTO.setHargaBeli(String.valueOf(barang.getHargaBeli()));
+            selectDataDTO.setHargaJual(String.valueOf(barang.getHargaJual()));
+            selectDataDTO.setSisaStok(String.valueOf(barang.getSisaStok()));
+            selectDataDTO.setStokMasuk(String.valueOf(barang.getStokMasuk()));
+            selectDataDTO.setStokKeluar(String.valueOf(barang.getStokKeluar()));
+            selectDataDTO.setCreatedAt(String.valueOf(barang.getCreatedAt()));
+            selectDataDTO.setModifiedAt(String.valueOf(barang.getModifiedAt()));
+
+            ResSelectDTO responseDTO = new ResSelectDTO();
+            responseDTO.setData(selectDataDTO);
+            responseDTO.setStatusCode("200");
+            responseDTO.setStatusMsg("SUCCESS");
+            responseDTO.setErrorMessage("");
             return ResponseEntity.status(HttpStatus.OK).body(responseDTO);
         } catch (AppException e) {
             log.error("{} - AppException occurred: {} - {}", loggerId, e.getStatusCode(), e.getErrorMessage());

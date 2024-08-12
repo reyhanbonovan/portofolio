@@ -22,7 +22,7 @@ public interface BarangRepository extends JpaRepository<EntityBarang, Integer> {
     @Query(value = "SELECT CASE WHEN COUNT(*) > 0 THEN 1 ELSE 0 END FROM stok_barang WHERE kode_barang = ?1", nativeQuery = true)
     int selectByKode(String kodeBarang);
 
-    //Select
+    //Get Select * Data Barang
     @Query(value = "SELECT * FROM stok_barang WHERE (kode_barang = :kodeBarang AND nama_barang = :namaBarang)", nativeQuery = true)
     List<EntityBarang> findBarangbyCodeName(@Param("kodeBarang") String kodeBarang, @Param("namaBarang") String namaBarang);
 
@@ -37,4 +37,11 @@ public interface BarangRepository extends JpaRepository<EntityBarang, Integer> {
     @Transactional
     @Query(value = "UPDATE stok_barang SET sisa_stok = :sisaStok, stok_keluar = :stokKeluar, modified_at = CURRENT_TIMESTAMP WHERE kode_barang = :kodeBarang AND nama_barang = :namaBarang", nativeQuery = true)
     void  updateOrderBarang(@Param("sisaStok") int sisaStok, @Param("stokKeluar") int stokMasuk, @Param("kodeBarang") String kodeBarang, @Param("namaBarang") String namaBarang);
+
+    //Delete Barang
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM stok_barang WHERE kode_barang = ?1 AND nama_barang = ?2", nativeQuery = true)
+    void deleteBarangByCodeName(String kodeBarang, String namaBarang);
+
 }
