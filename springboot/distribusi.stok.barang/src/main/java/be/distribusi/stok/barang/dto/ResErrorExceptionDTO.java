@@ -6,7 +6,7 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class ResErrorDTO {
+public class ResErrorExceptionDTO {
     @JsonProperty("logger_id")
     private String loggerId;
 
