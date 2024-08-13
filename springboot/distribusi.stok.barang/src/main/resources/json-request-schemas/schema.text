@@ -1,0 +1,51 @@
+//Request Json Schemas
+1. INSERT
+POST Header :
+http://localhost:8080/distribusi/insertBarang
+request body:
+{
+    "kode_barang": "A001",
+    "nama_barang": "LEAIR",
+    "harga_beli": "5000",
+    "harga_jual": "7500",
+    "stok_masuk": "20"
+}
+
+2. ADD
+POST Header :
+http://localhost:8080/distribusi/addStokBarang
+request body:
+{
+    "kode_barang": "A001",
+    "nama_barang": "LEAIR",
+    "stok_masuk": "4"
+}
+
+3. ORDER
+POST Header :
+http://localhost:8080/distribusi/orderBarang
+request body:
+{
+    "kode_barang": "A001",
+    "nama_barang": "LEAIR",
+    "banyak_pesanan": "5"
+}
+
+4. DELETE
+POST Header :
+http://localhost:8080/distribusi/deleteBarang
+request body:
+{
+    "kode_barang": "A001",
+    "nama_barang": "LEAIR"
+}
+
+5. SELECT
+POST Header :
+http://localhost:8080/distribusi/selectBarang
+request body:
+{
+    "kode_barang": "A001",
+    "nama_barang": "LEAIR"
+}
+
