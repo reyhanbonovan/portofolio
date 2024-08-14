@@ -13,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -51,7 +52,9 @@ public class OrderService {
         int stokKeluar = stokKeluarTemp + banyakPesanan;
         barangRepository.updateOrderBarang(sisaStok, stokKeluar, kodeBarang, namaBarang);
         // Hitung Harga Pesanan
-        Integer totalHarga = (banyakPesanan * barang.getHargaJual());
+        BigDecimal banyakPesananDecimal = BigDecimal.valueOf(banyakPesanan);
+        BigDecimal totalHarga = barang.getHargaJual().multiply(banyakPesananDecimal);
+//        Integer totalHarga = (banyakPesanan * barang.getHargaJual());
 
         // Mapping request ke responseDTO
         ResOrderDTO.orderDataDTO orderDataDTO = new ResOrderDTO.orderDataDTO();
@@ -61,7 +64,7 @@ public class OrderService {
         orderDataDTO.setNamaBarang(namaBarang);
         orderDataDTO.setHargaJual(String.valueOf(barang.getHargaJual()));
         orderDataDTO.setTotalPesanan(String.valueOf(banyakPesanan));
-        orderDataDTO.setTotalHarga(String.valueOf(totalHarga));
+        orderDataDTO.setTotalHarga(totalHarga.toString());
 
         ResOrderDTO responseDTO = new ResOrderDTO();
         responseDTO.setData(orderDataDTO);

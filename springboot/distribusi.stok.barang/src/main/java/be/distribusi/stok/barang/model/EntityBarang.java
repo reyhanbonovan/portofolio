@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -28,10 +29,10 @@ public class EntityBarang {
     private String namaBarang;
 
     @Column(name = "harga_beli")
-    private Integer hargaBeli;
+    private BigDecimal hargaBeli;  // Menggunakan BigDecimal
 
     @Column(name = "harga_jual")
-    private Integer hargaJual;
+    private BigDecimal hargaJual;  // Menggunakan BigDecimal
 
     @Column(name = "sisa_stok")
     private Integer sisaStok;
